@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: education_lab2_postgres
+    environment:
+      POSTGRES_DB: education_lab2
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - education_lab2_pgdata:/var/lib/postgresql/data
+
+volumes:
+  education_lab2_pgdata:

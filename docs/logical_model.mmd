@@ -1,0 +1,141 @@
+erDiagram
+    USERS ||--o{ USER_ROLES : has
+    ROLES ||--o{ USER_ROLES : assigned
+    USERS ||--o{ COURSES : teaches
+    COURSES ||--o{ MODULES : contains
+    MODULES ||--o{ LESSONS : contains
+    USERS ||--o{ ENROLLMENTS : makes
+    COURSES ||--o{ ENROLLMENTS : receives
+    ENROLLMENTS ||--o{ LESSON_PROGRESS : tracks
+    LESSONS ||--o{ LESSON_PROGRESS : tracked
+    COURSES ||--o{ ASSIGNMENTS : contains
+    ASSIGNMENTS ||--o{ SUBMISSIONS : receives
+    ENROLLMENTS ||--o{ SUBMISSIONS : sends
+    USERS ||--o{ SUBMISSIONS : reviews
+    COURSES ||--o{ QUIZZES : contains
+    QUIZZES ||--o{ QUESTIONS : contains
+    QUESTIONS ||--o{ QUESTION_OPTIONS : offers
+    QUIZZES ||--o{ ATTEMPTS : has
+    ENROLLMENTS ||--o{ ATTEMPTS : makes
+    ATTEMPTS ||--o{ ANSWERS : contains
+    QUESTIONS ||--o{ ANSWERS : answered
+    QUESTION_OPTIONS ||--o{ ANSWERS : selected
+    COURSES ||--o{ COURSE_PREREQUISITES : target
+    COURSES ||--o{ COURSE_PREREQUISITES : prerequisite
+
+    USERS {
+        bigint id PK
+        varchar email UK
+        varchar full_name
+        varchar password_hash
+        varchar status
+        timestamptz created_at
+    }
+    ROLES {
+        bigint id PK
+        varchar code UK
+        varchar name UK
+    }
+    USER_ROLES {
+        bigint user_id PK,FK
+        bigint role_id PK,FK
+    }
+    COURSES {
+        bigint id PK
+        bigint teacher_id FK
+        varchar title
+        text description
+        varchar status
+        timestamptz created_at
+        timestamptz published_at
+        timestamptz archived_at
+    }
+    MODULES {
+        bigint id PK
+        bigint course_id FK
+        varchar title
+        int position
+    }
+    LESSONS {
+        bigint id PK
+        bigint module_id FK
+        varchar title
+        int position
+        varchar content_ref UK
+    }
+    ENROLLMENTS {
+        bigint id PK
+        bigint user_id FK
+        bigint course_id FK
+        varchar status
+        timestamptz enrolled_at
+        timestamptz completed_at
+    }
+    LESSON_PROGRESS {
+        bigint enrollment_id PK,FK
+        bigint lesson_id PK,FK
+        varchar status
+        timestamptz started_at
+        timestamptz completed_at
+    }
+    ASSIGNMENTS {
+        bigint id PK
+        bigint course_id FK
+        varchar title
+        text description
+        numeric max_score
+        boolean is_required
+    }
+    SUBMISSIONS {
+        bigint id PK
+        bigint assignment_id FK
+        bigint enrollment_id FK
+        int attempt_no
+        text answer_text
+        varchar status
+        numeric score
+        bigint reviewer_id FK
+        timestamptz submitted_at
+        timestamptz reviewed_at
+    }
+    QUIZZES {
+        bigint id PK
+        bigint course_id FK
+        varchar title
+        numeric pass_score
+        int max_attempts
+        boolean is_required
+    }
+    QUESTIONS {
+        bigint id PK
+        bigint quiz_id FK
+        text text
+        int position
+    }
+    QUESTION_OPTIONS {
+        bigint id PK
+        bigint question_id FK
+        varchar option_text
+        int position
+        boolean is_correct
+    }
+    ATTEMPTS {
+        bigint id PK
+        bigint quiz_id FK
+        bigint enrollment_id FK
+        int attempt_no
+        varchar status
+        timestamptz started_at
+        timestamptz completed_at
+        numeric score
+    }
+    ANSWERS {
+        bigint attempt_id PK,FK
+        bigint question_id PK,FK
+        bigint option_id FK
+        timestamptz answered_at
+    }
+    COURSE_PREREQUISITES {
+        bigint course_id PK,FK
+        bigint prerequisite_course_id PK,FK
+    }
